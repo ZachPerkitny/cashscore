@@ -15,7 +15,7 @@
 {% for field in form.visible_fields %}
     <div>
         {{ field.label_tag }}
-        {% render_field field class="w100" %}
+        {% render_field field class="full-width" %}
         {% for error in field.errors %}
             <p class="text-error">
                 {{ error }}

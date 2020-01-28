@@ -1,13 +1,9 @@
 {% extends 'base.html' %}
-{% load static svg %}
-
-{% block stylesheet %}
-    <link rel="stylesheet" href="{% static 'css/home.css' %}"/>
-{% endblock %}
+{% load svg %}
 
 {% block content %}
-    <div id="greeting-container">
-        <div id="greeting" class="container">
+    <div id="greeting">
+        <div class="container pt-5">
             <h2>Welcome to CashScore</h2>
             <h5>A better way to screen tenants</h5>
             <a class="button mb-0" href="#">Get Started</a>

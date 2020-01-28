@@ -19,8 +19,9 @@ shapefiles/
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 
-# Media files
+# Media + Static files
 cashscore/mediafiles
+cashscore/staticfiles
 
 # Log files
 *.log

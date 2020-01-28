@@ -53,13 +53,31 @@ class Transaction(models.Model):
         null=True)
 
 
-class Application(models.Model):
+class Property(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE)
-    item = models.ForeignKey(
+        on_delete=models.CASCADE,
+        related_name='properties')
+    address = models.TextField()
+
+    def __str__(self):
+        return self.address
+
+
+class Application(models.Model):
+    property = models.ForeignKey(
+        Property,
+        on_delete=models.CASCADE,
+        related_name='applications')
+    unit = models.CharField(max_length=128, null=True, blank=True)
+    rent_asked = models.DecimalField(max_digits=10, decimal_places=2)
+    applicant_name = models.CharField(max_length=255)
+    applicant_email = models.EmailField()
+    item = models.OneToOneField(
         Item,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        related_name='application',
+        null=True)
 
     class State(models.TextChoices):
         waiting_for_applicant = 'waiting_for_applicant', _('waiting for applicant')

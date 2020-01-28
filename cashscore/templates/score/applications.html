@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container pt-3">
+        <div class="flex align-items-center justify-content-between">
+            <h4 class="mb-0">My Applications</h4>
+            <div>
+                <a class="button button-primary" href="{% url 'score:add_applicant' %}">Add Applicant</a>
+                <a class="button" href="{% url 'score:add_property' %}">Add Property</a>
+            </div>
+        </div>
+        <table class="full-width mt-3">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Property</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>View Report</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for property in properties %}
+                    {% for application in property.applications.all %}
+                        <tr>
+                            <td>{{ application.applicant_name }}</td>
+                            <td>{{ property.address }}</td>
+                            <td>{{ application.applicant_email }}</td>
+                            <td>{{ application.state }}</td>
+                            <th><a class="button mb-0" href="#" disabled>View Report</a>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

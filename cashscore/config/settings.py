@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'compressor',
     'svg',
     'widget_tweaks',
 
@@ -114,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL='accounts:login'
-LOGIN_REDIRECT_URL='web:home'
+LOGIN_REDIRECT_URL='score:applications'
 LOGOUT_REDIRECT_URL='web:home'
 
 # Internationalization
@@ -139,5 +140,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container pt-3">
+        <h4>Add Property</h4>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% include 'includes/form.html' %}
+            <button class="button-primary">Add Property</button>
+        </form>
+    </div>
+{% endblock %}

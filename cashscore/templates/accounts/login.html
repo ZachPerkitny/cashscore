@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block body %}
-    <div class="full-page-container">
-        <div class="centered" style="max-width: 360px;">
+{% block content %}
+    <div class="container pt-3">
+        <div>
             <form method="post" novalidate>
                 {% csrf_token %}
                 {% include 'includes/form.html' with form=form %}

@@ -1,8 +1,8 @@
 <nav class="navbar">
     <div class="container">
         {% if user.is_authenticated %}
-        <div class="float-right">
-            <a class="button button-primary mb-0" href="#">View My Properties</a>
+        <div class="pull-right">
+            <a class="button button-primary mb-0" href="{% url 'score:applications' %}">View Applications</a>
             <a class="button mb-0" href="{% url 'accounts:logout' %}">Log Out</a>
         </div>
         {% else %}
