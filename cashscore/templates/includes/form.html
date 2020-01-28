@@ -1,0 +1,25 @@
+{% if form.non_field_errors %}
+    <div>
+        {% for error in form.non_field_errors %}
+            <p class="text-error">{{ error }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% for hidden_field in form.hidden_fields %}
+    {{ hidden_field }}
+{% endfor %}
+
+{% load widget_tweaks %}
+
+{% for field in form.visible_fields %}
+    <div>
+        {{ field.label_tag }}
+        {% render_field field class="w100" %}
+        {% for error in field.errors %}
+            <p class="text-error">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </div>
+{% endfor %}

@@ -1,0 +1,28 @@
+<nav class="navbar">
+    <div class="container">
+        {% if user.is_authenticated %}
+        <div class="float-right">
+            <a class="button button-primary mb-0" href="#">View My Properties</a>
+            <a class="button mb-0" href="{% url 'accounts:logout' %}">Log Out</a>
+        </div>
+        {% else %}
+        <div class="flex justify-content-between">
+            <ul class="navbar-list">
+                <li class="navbar-item">
+                    <a class="navbar-link" href="{% url 'web:home' %}">Home</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="navbar-link" href="#">Product</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="navbar-link" href="#">Pricing</a>
+                </li>
+            </ul>
+            <div>
+                <a class="button mb-0" href="{% url 'accounts:login' %}">Log In</a>
+                <a class="button button-primary mb-0" href="{% url 'accounts:signup' %}">Sign Up</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</nav>

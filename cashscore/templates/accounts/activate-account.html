@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <p>
+        Hi {{ user.get_full_name }},
+        Click the button below to activate your account
+    </p>
+    <a class="button button-primary" href="{{ protocol }}://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}">
+        Activate Account
+    </a>
+{% endblock %}

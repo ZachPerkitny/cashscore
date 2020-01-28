@@ -1,0 +1,16 @@
+#greeting-container {
+    overflow: hidden;
+    position: relative;
+    background: #E8F5E9;
+    height: calc(100vh - 65px);
+}
+
+#greeting-container > svg {
+    display: block;
+    position: absolute;
+    bottom: 0;
+}
+
+#greeting {
+    padding-top: 18rem;
+}

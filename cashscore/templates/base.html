@@ -2,13 +2,19 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
         <title>{% block title %}CashScore{% endblock %}</title>
+        <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{% static 'css/normalize.css' %}"/>
         <link rel="stylesheet" href="{% static 'css/skeleton.css' %}"/>
+        <link rel="stylesheet" href="{% static 'css/app.css' %}"/>
         {% block stylesheet %}{% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {% block body %}
+            {% include 'includes/header.html' %}
+            {% block content %}{% endblock %}
+        {% endblock %}
         {% block javascript %}{% endblock %}
     </body>
 </html>

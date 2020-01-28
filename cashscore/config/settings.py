@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -38,8 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'svg',
+    'widget_tweaks',
+
     'cashscore.accounts',
     'cashscore.score',
+    'cashscore.web',
 ]
 
 MIDDLEWARE = [
@@ -72,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'cashscore.wsgi.application'
+WSGI_APPLICATION = 'cashscore.config.wsgi.application'
 
 
 # Database
@@ -109,6 +113,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 AUTH_USER_MODEL = 'accounts.User'
 
+LOGIN_URL='accounts:login'
+LOGIN_REDIRECT_URL='web:home'
+LOGOUT_REDIRECT_URL='web:home'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -132,3 +139,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

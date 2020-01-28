@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="full-page-container-wheader">
+        <div class="centered" style="max-width: 450px;">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% include 'includes/form.html' with form=form %}
+                <button class="button-primary" type="submit">Sign Up</button>
+            </form>
+            <h6 class="text-align-center">
+                Already have a CashScore account? <a href="{% url 'accounts:login' %}">Login</a>
+            </h6>
+        </div>
+    </div>
+{% endblock %}
