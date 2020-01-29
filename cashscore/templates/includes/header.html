@@ -2,7 +2,7 @@
     <div class="container">
         {% if user.is_authenticated %}
         <div class="pull-right">
-            <a class="button button-primary mb-0" href="{% url 'score:applications' %}">View Applications</a>
+            <a class="button button-primary mb-0 mr-1" href="{% url 'score:applications' %}">View Applications</a>
             <a class="button mb-0" href="{% url 'accounts:logout' %}">Log Out</a>
         </div>
         {% else %}
@@ -19,8 +19,8 @@
                 </li>
             </ul>
             <div>
-                <a class="button mb-0" href="{% url 'accounts:login' %}">Log In</a>
-                <a class="button button-primary mb-0" href="{% url 'accounts:signup' %}">Sign Up</a>
+                <a class="button mb-0 mr-1" href="{% url 'accounts:login' %}">Log In</a>
+                <a class="button button-primary mb-0 mr-1" href="{% url 'accounts:signup' %}">Sign Up</a>
             </div>
         </div>
         {% endif %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <p>
+        Hi {{ application.applicant_name }},
+        Click the button below to complete the application
+    </p>
+    <a class="button button-primary" href="{{ protocol }}://{{ domain }}{% url 'score:applicant_entry' aidb64=aidb64 token=token %}">
+        Complete Application
+    </a>
+{% endblock %}

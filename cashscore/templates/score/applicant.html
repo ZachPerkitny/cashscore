@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container pt-3 text-align-center">
+        <h4>
+            Hello {{ application.applicant_name }}
+        </h4>
+        <form id="link-form" method="post" novalidate>
+            {% csrf_token %}
+            <button class="button button-primary">Start Application</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+    <script type="text/javascript">
+        (function($) {
+            var $form = $('#link-form');
+            var handler = Plaid.create({
+                clientName: 'CashScore',
+                env: '{{ PLAID_ENV }}',
+                key: '{{ PLAID_PUBLIC_KEY }}',
+                product: ['transactions'],
+                onSuccess: function(public_token, metadata) {
+                    var input = $('<input/>', {
+                        type: 'hidden',
+                        name: 'public_token',
+                        value: public_token
+                    }).appendTo($form);
+                    $form[0].submit();
+                },
+            });
+
+            $form.on('submit', function(e) {
+                e.preventDefault();
+                handler.open();
+            });
+        })(jQuery);
+    </script>
+{% endblock %}

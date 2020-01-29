@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
 from django.views.generic import FormView
@@ -29,7 +30,7 @@ class SignUpView(FormView):
             'user': user,
             'domain': get_current_site(self.request).domain,
             'protocol': 'https' if self.request.is_secure() else 'http',
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'uid': urlsafe_base64_encode(force_bytes(user.id)),
             'token': account_activation_token.make_token(user),
         })
         to_email = form.cleaned_data.get('email')
@@ -47,9 +48,9 @@ class SignUpView(FormView):
 class ActivationView(View):
     def get(self, request, uidb64, token):
         try:
-            uid = force_text(urlsafe_base64_decode(uidb64))
+            uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(id=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist, ValidationError):
             user = None
 
         if user is not None and account_activation_token.check_token(user, token):
