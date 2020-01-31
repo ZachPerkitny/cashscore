@@ -8,8 +8,8 @@ from django.utils.http import urlsafe_base64_decode
 from django.views.generic import FormView, TemplateView
 
 from .forms import ApplicationForm, ApplicantForm, PropertyForm
-from .models import Application, Property
-from .tasks import send_email_to_applicant
+from .models import Application, Item, Property
+from .tasks import send_email_to_applicant, get_applicant_transactions
 from .tokens import application_token
 
 
@@ -52,6 +52,7 @@ INTERNAL_APPLICANT_ENTRY_SESSION_TOKEN = '_applicant_entry_token'
 
 
 class ApplicantView(FormView):
+    url_token = 'start-application'
     template_name = 'score/applicant.html'
     form_class = ApplicantForm
     success_url = reverse_lazy('web:home')
@@ -65,7 +66,7 @@ class ApplicantView(FormView):
 
         if self.application is not None:
             token = kwargs['token']
-            if token == 'start-application':
+            if token == self.url_token:
                 session_token = self.request.session.get(
                     INTERNAL_APPLICANT_ENTRY_SESSION_TOKEN)
                 if application_token.check_token(self.application, session_token):
@@ -75,14 +76,19 @@ class ApplicantView(FormView):
                     # It's important to redirect here to avoid the token being
                     # leaked in the HTTP Referer header.
                     self.request.session[INTERNAL_APPLICANT_ENTRY_SESSION_TOKEN] = token
-                    redirect_url = self.request.path.replace(token, 'start-application')
+                    redirect_url = self.request.path.replace(token, self.url_token)
                     return HttpResponseRedirect(redirect_url)
 
         return HttpResponseRedirect(reverse_lazy('web:home'))
 
     def form_valid(self, form):
-        # Get access token
-        print(form.public_token)
+        with transaction.atomic():
+            self.application.state = Application.State.running
+            self.application.save()
+
+            public_token = form.cleaned_data.get('public_token')
+            get_applicant_transactions.delay(self.application.id, public_token)
+
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):

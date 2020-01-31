@@ -5,22 +5,23 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Item(models.Model):
-    creds = JSONField()
-    last_pull = models.DateField()
+    id = models.CharField(max_length=128, primary_key=True)
+    access_token = models.CharField(max_length=128)
+    institution_id = models.CharField(max_length=10)
+    last_pull = models.DateField(auto_now_add=True)
 
 
 class Account(models.Model):
     id = models.CharField(max_length=128, primary_key=True)
     mask = models.CharField(max_length=4, null=True)
     name = models.CharField(max_length=255)
-    official_name = models.CharField(max_length=255)
+    official_name = models.CharField(max_length=255, null=True)
     type = models.CharField(max_length=128)
     subtype = models.CharField(max_length=128)
-    available_balance = models.DecimalField(max_digits=12, decimal_places=2)
+    available_balance = models.DecimalField(max_digits=12, decimal_places=2, null=True)
     current_balance = models.DecimalField(max_digits=12, decimal_places=2)
-    balance_iso_currency_code = models.CharField(max_length=3)
-    balance_unofficial_currency_code = models.CharField(max_length=3)
-    institution_id = models.CharField(max_length=10)
+    balance_iso_currency_code = models.CharField(max_length=3, null=True)
+    balance_unofficial_currency_code = models.CharField(max_length=3, null=True)
     item = models.ForeignKey(
         Item,
         on_delete=models.CASCADE,
@@ -40,7 +41,7 @@ class Transaction(models.Model):
     iso_currency_code = models.CharField(max_length=3, null=True)
     unofficial_currency_code = models.CharField(max_length=3, null=True)
     date = models.DateField()
-    authorized_date = models.DateField()
+    authorized_date = models.DateField(null=True)
     location = JSONField(null=True)
     payment_meta = JSONField(null=True)
     payment_channel = models.CharField(max_length=8)
