@@ -1,9 +1,10 @@
-{% load compress static %}
+{% load compress fontawesome_5 static %}
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
         <title>{% block title %}CashScore{% endblock %}</title>
+        {% fontawesome_5_static %}
         <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
         {% compress css %}
             <link type="text/x-scss" href="{% static 'scss/main.scss' %}" rel="stylesheet"/>
@@ -15,6 +16,8 @@
             {% include 'includes/header.html' %}
             {% block content %}{% endblock %}
         {% endblock %}
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+        <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
         {% block javascript %}{% endblock %}
     </body>
 </html>

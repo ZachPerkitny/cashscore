@@ -28,7 +28,7 @@ $total-columns: 12 !default;
 $column-width: 100 / $total-columns !default; // calculates individual column width based off of # of columns
 $column-margin: 4% !default; // space between columns
 
-// Misc
-$global-radius: 4px !default;
+// Borders
+$border-radius: .5rem;
 
 $spacer: 1rem;

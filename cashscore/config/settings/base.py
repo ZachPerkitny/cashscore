@@ -29,7 +29,7 @@ env.read_env(str(ROOT_DIR.path('.env')))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG', default=False)
+DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = []
 
@@ -53,10 +53,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'compressor',
+    'django_gravatar',
+    'djstripe',
+    'fontawesome_5',
     'svg',
     'widget_tweaks',
 
     'cashscore.accounts',
+    'cashscore.payments',
     'cashscore.score',
     'cashscore.web',
 ]
@@ -164,3 +168,13 @@ PLAID_ENV = env('PLAID_ENV')
 PLAID_CLIENT_ID = env('PLAID_CLIENT_ID')
 PLAID_SECRET = env('PLAID_SECRET')
 PLAID_PUBLIC_KEY = env('PLAID_PUBLIC_KEY')
+
+# Stripe
+STRIPE_LIVE_MODE = env.bool('STRIPE_LIVE_MODE', default=False)
+if STRIPE_LIVE_MODE:
+    STRIPE_LIVE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
+    STRIPE_LIVE_SECRET_KEY = env('STRIPE_SECRET_KEY')
+else:
+    STRIPE_TEST_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
+    STRIPE_TEST_SECRET_KEY = env('STRIPE_SECRET_KEY')
+DJSTRIPE_WEBHOOK_SECRET = env('DJSTRIPE_WEBHOOK_SECRET')

@@ -49,12 +49,23 @@ def get_applicant_transactions(application_id, public_token):
         institution_id=item_dict['institution_id'])
     application.item = item
 
-    start_date = '{:%Y-%m-%d}'.format(datetime.datetime.now() + datetime.timedelta(-730))
+    start_date = '{:%Y-%m-%d}'.format(datetime.datetime(1900, 1, 1))
     end_date = '{:%Y-%m-%d}'.format(datetime.datetime.now())
+
     transactions_response = plaid_client.Transactions.get(access_token, start_date, end_date)
-    
+    account_dicts = transactions_response['accounts']
+    transaction_dicts = transactions_response['transactions']
+
+    while len(transaction_dicts) < transactions_response['total_transactions']:
+        transactions_response = plaid_client.Transactions.get(
+            access_token,
+            start_date,
+            end_date,
+            offset=len(transaction_dicts))
+        transaction_dicts.extend(transactions_response['transactions']) 
+
     accounts = {}
-    for account_dict in transactions_response['accounts']:
+    for account_dict in account_dicts:
         accounts[account_dict['account_id']] = Account.objects.create(
             id=account_dict['account_id'],
             mask=account_dict['mask'],
@@ -68,7 +79,7 @@ def get_applicant_transactions(application_id, public_token):
             balance_unofficial_currency_code=account_dict['balances']['unofficial_currency_code'],
             item=item)
 
-    for transaction_dict in transactions_response['transactions']:
+    for transaction_dict in transaction_dicts:
         if all(value == None for value in transaction_dict['location'].values()):
             location = None
         else:

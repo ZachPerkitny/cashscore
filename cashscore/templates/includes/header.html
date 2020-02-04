@@ -1,9 +1,25 @@
+{% load gravatar fontawesome_5  %}
 <nav class="navbar">
     <div class="container">
         {% if user.is_authenticated %}
-        <div class="pull-right">
-            <a class="button button-primary mb-0 mr-1" href="{% url 'score:applications' %}">View Applications</a>
-            <a class="button mb-0" href="{% url 'accounts:logout' %}">Log Out</a>
+        <div class="pull-right popover-container">
+            <span style="vertical-align:middle;">
+                <img src="{% gravatar_url user.email 35 %}" class="rounded-circle" data-popover="#profile-popover"/>
+                {% fa5_icon 'caret-down' 'fas' %}
+            </span>
+            <div id="profile-popover" class="popover">
+                <ul class="popover-list">
+                    <li class="popover-item">
+                        <a class="popover-link" href="{% url 'score:applications' %}">View Applications</a>
+                    </li>
+                    <li class="popover-item">
+                        <a class="popover-link" href="#">Settings</a>
+                    </li>
+                    <li class="popover-item">
+                        <a class="popover-link" href="{% url 'accounts:logout' %}">Logout</a>
+                    </li>
+                </ul>
+            </div>
         </div>
         {% else %}
         <div class="flex justify-content-between">

@@ -59,7 +59,7 @@ class Property(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='properties')
-    address = models.TextField()
+    address = models.CharField(max_length=128)
 
     def __str__(self):
         return self.address
