@@ -14,8 +14,15 @@
 
 {% for field in form.visible_fields %}
     <div>
-        {{ field.label_tag }}
-        {% render_field field class="full-width" %}
+        {% with field.field.widget.input_type as input_type %}
+            {% if input_type == 'checkbox' or input_type == 'radio' %}
+                {{ field.label_tag }}
+                {{ field }}
+            {% else %}
+                {{ field.label_tag }}
+                {% render_field field class="full-width" %}
+            {% endif %}
+        {% endwith %}
         {% for error in field.errors %}
             <p class="text-error">
                 {{ error }}

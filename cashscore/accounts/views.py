@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
@@ -10,7 +11,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
 from django.views.generic import FormView
 
-from .forms import SignUpForm
+from stripe.error import CardError, InvalidRequestError
+
+from .forms import AddPaymentMethodForm, SignUpForm
 from .models import User
 from .tokens import account_activation_token
 
@@ -63,3 +66,24 @@ class ActivationView(View):
         else:
             messages.error(request, 'Activation link is invalid.')
             return HttpResponseRedirect(reverse_lazy('web:home'))
+
+
+class PaymentMethodsView(LoginRequiredMixin, FormView):
+    template_name = 'accounts/payment-methods.html'
+    form_class = AddPaymentMethodForm
+    success_url = reverse_lazy('accounts:edit_account')
+
+    def form_valid(self, form):
+        try:
+            form.save()
+            messages.success(self.request, 'Succesfully added a new payment method.')
+            return super().form_valid(form)
+        except (CardError, InvalidRequestError) as e:
+            messages.error(self.request, 'Error adding new card.')
+
+        return super().form_invalid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['customer'] = self.request.user.stripe_customer
+        return kwargs

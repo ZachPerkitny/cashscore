@@ -1,4 +1,4 @@
-{% load gravatar fontawesome_5  %}
+{% load gravatar fontawesome_5 %}
 <nav class="navbar">
     <div class="container">
         {% if user.is_authenticated %}
@@ -13,7 +13,7 @@
                         <a class="popover-link" href="{% url 'score:applications' %}">View Applications</a>
                     </li>
                     <li class="popover-item">
-                        <a class="popover-link" href="#">Settings</a>
+                        <a class="popover-link" href="{% url 'accounts:edit_account' %}">Settings</a>
                     </li>
                     <li class="popover-item">
                         <a class="popover-link" href="{% url 'accounts:logout' %}">Logout</a>

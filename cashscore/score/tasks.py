@@ -1,4 +1,6 @@
 import datetime
+import decimal
+import uuid
 
 from django.core.mail import EmailMessage
 from django.db import DatabaseError
@@ -8,32 +10,26 @@ from django.db import transaction
 from django.utils.http import urlsafe_base64_encode
 
 from celery import shared_task
+from djstripe import settings as djstripe_settings
 from plaid.errors import APIError, RateLimitExceededError
 from smtplib import SMTPException
+from stripe.error import StripeError
 
 from cashscore.plaid import client as plaid_client
 
 from .models import Account, Application, Item, Transaction
 
 
-@shared_task(autoretry_for=(SMTPException,), retry_backoff=True, max_retries=None)
-def send_email_to_applicant(application_id, protocol, domain, token):
+@shared_task(autoretry_for=(DatabaseError, StripeError,), retry_backoff=True, max_retries=None)
+@transaction.atomic
+def charge_customer_for_application(application_id, idempotency_key):
     application = Application.objects.get(id=application_id)
-
-    mail_subject = 'Lorem Ipsum Dolor'
-    message = render_to_string('score/applicant-request.html', {
-        'application': application,
-        'protocol': protocol,
-        'domain': domain,
-        'token': token,
-        'aidb64': urlsafe_base64_encode(force_bytes(application_id)), 
-    })
-    to_email = application.applicant_email
-    email = EmailMessage(
-        mail_subject,
-        message,
-        to=[to_email])
-    email.send()
+    customer = application.property.user.stripe_customer
+    customer.charge(
+        amount=decimal.Decimal('19.99'),
+        idempotency_key=idempotency_key)
+    application.state = application.State.completed
+    application.save()
 
 
 @shared_task(autoretry_for=(DatabaseError, APIError, RateLimitExceededError,), retry_backoff=True, max_retries=None)
@@ -108,5 +104,29 @@ def get_applicant_transactions(application_id, public_token):
             pending_transaction_id=transaction_dict['pending_transaction_id'],
             account_owner=transaction_dict['account_owner'])
 
-    application.state = Application.State.completed
+    application.state = Application.State.payment_pending
     application.save()
+
+    charge_customer_for_application.delay(
+        application_id,
+        uuid.uuid4())
+
+
+@shared_task(autoretry_for=(SMTPException,), retry_backoff=True, max_retries=None)
+def send_email_to_applicant(application_id, protocol, domain, token):
+    application = Application.objects.get(id=application_id)
+
+    mail_subject = 'Lorem Ipsum Dolor'
+    message = render_to_string('score/applicant-request.html', {
+        'application': application,
+        'protocol': protocol,
+        'domain': domain,
+        'token': token,
+        'aidb64': urlsafe_base64_encode(force_bytes(application_id)), 
+    })
+    to_email = application.applicant_email
+    email = EmailMessage(
+        mail_subject,
+        message,
+        to=[to_email])
+    email.send()

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load fontawesome_5 %}
+
+{% block content %}
+    {% with customer=user.stripe_customer %}
+    <div class="container pt-3">
+        <div class="mb-3">
+            <h4 class="mb-0">Payment Methods</h4>
+            {% with cards=customer.legacy_cards.all %}
+                {% if cards %}
+                    <table class="full-width mt-3">
+                        <thead>
+                            <tr>
+                                <td>Last 4</td>
+                                <td>Expires</td>
+                                <td>Set Default</td>
+                                <td>Remove</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for card in cards %}
+                                <tr>
+                                    <td>{% fa5_icon 'credit-card' 'far' class='mr-1' %}{{ card.brand }} ending in {{ card.last4 }}</td>
+                                    <td>{{ card.exp_month }}/{{ card.exp_year }}</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    No payment method on file.
+                {% endif %}
+            {% endwith %}
+        </div>
+        <h5>Add Payment Method</h5>
+        <form method="post" novalidate id="add-card-form">
+            {% csrf_token %}
+            {% include 'includes/form.html' %}
+            <button class="button-primary">Add</button>
+        </form>
+    </div>
+    {% endwith %}
+{% endblock %}
+
+{% block javascript %}
+    {{ form.media.js }}
+{% endblock %}

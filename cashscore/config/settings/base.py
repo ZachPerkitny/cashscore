@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms',
 
     'compressor',
     'django_gravatar',
@@ -60,7 +61,6 @@ INSTALLED_APPS = [
     'widget_tweaks',
 
     'cashscore.accounts',
-    'cashscore.payments',
     'cashscore.score',
     'cashscore.web',
 ]
@@ -94,6 +94,8 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'cashscore.config.wsgi.application'
 

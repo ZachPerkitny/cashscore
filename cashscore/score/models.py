@@ -83,7 +83,7 @@ class Application(models.Model):
     class State(models.TextChoices):
         waiting_for_applicant = 'waiting_for_applicant', _('waiting for applicant')
         running = 'running', _('running')
-        waiting_for_payment = 'waiting_for_payment', _('waiting for payment')
+        payment_pending = 'payment_pending', _('payment pending')
         completed = 'completed', _('completed')
 
     state = models.CharField(

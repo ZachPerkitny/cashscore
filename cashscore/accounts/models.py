@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import ugettext_lazy as _
+from django.utils.functional import cached_property
 
 
 class UserManager(BaseUserManager):
@@ -48,3 +49,9 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+    @cached_property
+    def stripe_customer(self):
+        from djstripe.models import Customer
+        customer, created = Customer.get_or_create(self)
+        return customer
