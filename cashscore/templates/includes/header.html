@@ -3,17 +3,17 @@
     <div class="container">
         {% if user.is_authenticated %}
         <div class="pull-right popover-container">
-            <span style="vertical-align:middle;">
+            <div class="flex align-items-center justify-content-center">
                 <img src="{% gravatar_url user.email 35 %}" class="rounded-circle" data-popover="#profile-popover"/>
-                {% fa5_icon 'caret-down' 'fas' %}
-            </span>
+                {% fa5_icon 'caret-down' 'fas' class='dark-grey ml-1' %}
+            </div>
             <div id="profile-popover" class="popover">
                 <ul class="popover-list">
                     <li class="popover-item">
                         <a class="popover-link" href="{% url 'score:applications' %}">View Applications</a>
                     </li>
                     <li class="popover-item">
-                        <a class="popover-link" href="{% url 'accounts:edit_account' %}">Settings</a>
+                        <a class="popover-link" href="{% url 'accounts:account' %}">Settings</a>
                     </li>
                     <li class="popover-item">
                         <a class="popover-link" href="{% url 'accounts:logout' %}">Logout</a>

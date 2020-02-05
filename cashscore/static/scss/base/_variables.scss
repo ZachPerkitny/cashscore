@@ -13,9 +13,10 @@ $light-grey: #e1e1e1 !default;
 $dark-grey: #333 !default;
 $primary-color: #4CAF50 !default;
 $secondary-color: lighten($dark-grey, 13.5%) !default;
-$border-color: #bbb !default;
+$border-color: #ddd !default;
 $link-color: #388E3C !default;
 $font-color: #222 !default;
+$danger: #F44336 !default;
 
 // Typography
 $font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
@@ -32,3 +33,4 @@ $column-margin: 4% !default; // space between columns
 $border-radius: .5rem;
 
 $spacer: 1rem;
+$spacers: 0, ($spacer * 0.25), ($spacer * 0.5), $spacer, ($spacer * 1.5), ($spacer * 3)

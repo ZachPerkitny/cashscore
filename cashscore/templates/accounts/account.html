@@ -1,0 +1,10 @@
+{% extends 'accounts/base-account-settings.html' %}
+
+{% block settings %}
+    <h4>Change Password</h4>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% include 'includes/form.html' %}
+        <button class="button-primary" type="submit">Change</button>
+    </form>
+{% endblock %}

@@ -2,15 +2,21 @@
 
 {% block content %}
     <div class="container pt-3">
-        <div>
-            <form method="post" novalidate>
-                {% csrf_token %}
-                {% include 'includes/form.html' with form=form %}
-                <button class="button-primary" type="submit">Login</button>
-            </form>
-            <h6 class="text-align-center">
-                New to CashScore? <a href="{% url 'accounts:signup' %}">Sign Up</a>
-            </h6>
-        </div>
+        <h4>
+            Login
+        </h4>
+        <hr/>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% include 'includes/form.html' %}
+            <button class="button-primary" type="submit">Login</button>
+        </form>
+        <hr/>
+        <h6 class="text-align-center">
+            <a href="{% url 'accounts:password_reset' %}">Forgot Password?</a>
+        </h6>
+        <h6 class="text-align-center">
+            New to CashScore? <a href="{% url 'accounts:signup' %}">Sign Up</a>
+        </h6>
     </div>
 {% endblock %}

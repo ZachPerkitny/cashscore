@@ -117,7 +117,7 @@ def send_email_to_applicant(application_id, protocol, domain, token):
     application = Application.objects.get(id=application_id)
 
     mail_subject = 'Lorem Ipsum Dolor'
-    message = render_to_string('score/applicant-request.html', {
+    message = render_to_string('score/applicant-request-email.html', {
         'application': application,
         'protocol': protocol,
         'domain': domain,

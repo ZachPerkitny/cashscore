@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container pt-3">
+        <div class="row">
+            <div class="three columns">
+                <div class="list">
+                    {% url 'accounts:account' as account_url %}
+                    <a class="list-item list-item-action{% if request.path == account_url %} active{% endif %}" href="{{ account_url }}">
+                        Account
+                    </a>
+                    {% url 'accounts:payment_methods' as payment_methods_url %}
+                    <a class="list-item list-item-action{% if request.path == payment_methods_url %} active{% endif %}" href="{{ payment_methods_url }}">
+                        Payment Methods
+                    </a>
+                </div>
+            </div>
+            <div class="nine columns">
+                {% block settings %}{% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

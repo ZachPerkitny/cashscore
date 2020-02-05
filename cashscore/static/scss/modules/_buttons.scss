@@ -15,11 +15,15 @@ button {
   text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
-  background-color: transparent;
+  background-color: lighten($light-grey, 7.5%);
+  border: none;
   border-radius: $border-radius;
-  border: 1px solid $border-color;
   cursor: pointer;
   box-sizing: border-box;
+  &:disabled {
+    opacity: .65;
+    pointer-events: none;
+  }
 }
 
 input {
@@ -38,18 +42,22 @@ input {
     text-transform: uppercase;
     text-decoration: none;
     white-space: nowrap;
-    background-color: transparent;
+    background-color: #eee;
+    border: none;
     border-radius: $border-radius;
-    border: 1px solid $border-color;
     cursor: pointer;
     box-sizing: border-box;
+    &:disabled {
+      opacity: .65;
+      pointer-events: none;
+    }
   }
 }
 
 .button:hover,
 button:hover {
   color: $dark-grey;
-  border-color: lighten($dark-grey, 33.3%);
+  background-color: $light-grey;
   outline: 0;
 }
 
@@ -58,7 +66,7 @@ input {
   &[type="reset"]:hover,
   &[type="button"]:hover {
     color: $dark-grey;
-    border-color: lighten($dark-grey, 33.3%);
+    background-color: $light-grey;
     outline: 0;
   }
 }
@@ -66,7 +74,7 @@ input {
 .button:focus,
 button:focus {
   color: $dark-grey;
-  border-color: lighten($dark-grey, 33.3%);
+  background-color: $light-grey;
   outline: 0;
 }
 
@@ -75,7 +83,7 @@ input {
   &[type="reset"]:focus,
   &[type="button"]:focus {
     color: $dark-grey;
-    border-color: lighten($dark-grey, 33.3%);
+    background-color: $light-grey;
     outline: 0;
   }
 }

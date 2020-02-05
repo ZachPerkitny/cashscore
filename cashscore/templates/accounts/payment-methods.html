@@ -1,9 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'accounts/base-account-settings.html' %}
 {% load fontawesome_5 %}
 
-{% block content %}
+{% block settings %}
     {% with customer=user.stripe_customer %}
-    <div class="container pt-3">
         <div class="mb-3">
             <h4 class="mb-0">Payment Methods</h4>
             {% with cards=customer.legacy_cards.all %}
@@ -11,10 +10,9 @@
                     <table class="full-width mt-3">
                         <thead>
                             <tr>
-                                <td>Last 4</td>
+                                <td>Card</td>
                                 <td>Expires</td>
-                                <td>Set Default</td>
-                                <td>Remove</td>
+                                <td></td>
                             </tr>
                         </thead>
                         <tbody>
@@ -22,8 +20,18 @@
                                 <tr>
                                     <td>{% fa5_icon 'credit-card' 'far' class='mr-1' %}{{ card.brand }} ending in {{ card.last4 }}</td>
                                     <td>{{ card.exp_month }}/{{ card.exp_year }}</td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>
+                                        <div class="flex justify-content-end">
+                                            <form class="mb-0 mr-2" method="post" action="{% url 'accounts:set_default_payment_method' id=card.id %}">
+                                                {% csrf_token %}
+                                                <button class="button-primary mb-0"{% if card == customer.default_source.resolve %} disabled{% endif %}>Set Default</button>
+                                            </form>
+                                            <form class="mb-0" method="post" action="{% url 'accounts:delete_payment_method' id=card.id %}">
+                                                {% csrf_token %}
+                                                <button class="mb-0" type="submit">Delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -39,7 +47,6 @@
             {% include 'includes/form.html' %}
             <button class="button-primary">Add</button>
         </form>
-    </div>
     {% endwith %}
 {% endblock %}
 
