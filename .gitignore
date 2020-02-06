@@ -25,3 +25,5 @@ cashscore/staticfiles
 
 # Log files
 *.log
+
+.DS_Store
