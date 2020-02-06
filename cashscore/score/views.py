@@ -8,7 +8,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.views.generic import FormView, TemplateView
 
 from .forms import ApplicationForm, ApplicantForm, PropertyForm
-from .models import Application, Item, Property
+from .models import Application, Item, Property, Transaction
 from .tasks import send_email_to_applicant, get_applicant_transactions
 from .tokens import application_token
 
@@ -110,3 +110,17 @@ class AddPropertyView(LoginRequiredMixin, FormView):
         property.save()
 
         return super().form_valid(form)
+
+
+class ReportView(LoginRequiredMixin, TemplateView):
+    template_name = 'score/reports.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['transactions'] = Transaction.objects.filter(
+            account__item__application=context['application_id'],
+            account__item__application__property__user=self.request.user
+        ).order_by('-date')
+        # import ipdb;ipdb.set_trace()
+        return context
+    
