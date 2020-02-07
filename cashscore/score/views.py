@@ -86,8 +86,8 @@ class ApplicantView(FormView):
             self.application.state = Application.State.running
             self.application.save()
 
-            public_token = form.cleaned_data.get('public_token')
-            get_applicant_transactions.delay(self.application.id, public_token)
+            tokens = form.cleaned_data.get('tokens')
+            get_applicant_transactions.delay(self.application.id, tokens)
 
         return super().form_valid(form)
 

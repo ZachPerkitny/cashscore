@@ -1,14 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container pt-3 text-align-center">
-        <h4>
-            Hello {{ application.applicant_name }}
-        </h4>
+    <div class="container full-height-wheader flex flex-col align-items-center justify-content-center">
+        <h2>
+            Welcome {{ application.applicant_name }}
+        </h2>
         <form id="link-form" method="post" novalidate>
             {% csrf_token %}
-            <button class="button button-primary">Start Application</button>
-        </form>
+            <button class="button button-primary" type="submit" disabled>
+                Finish Application
+            </button>
+            <span class="mx-2">or</span>
+            <button class="button button-primary" id="add-accounts-button" type="button">
+                Add Account
+            </button>
+        </form> 
     </div>
 {% endblock %}
 
@@ -16,26 +22,35 @@
     <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
     <script type="text/javascript">
         (function($) {
+            var tokens = [];
             var $form = $('#link-form');
+            var $formSubmitButton = $form.find('button[type="submit"]');
+            var $addAccountsButton = $('#add-accounts-button');
             var handler = Plaid.create({
                 clientName: 'CashScore',
                 env: '{{ PLAID_ENV }}',
                 key: '{{ PLAID_PUBLIC_KEY }}',
                 product: ['transactions'],
                 onSuccess: function(public_token, metadata) {
-                    var input = $('<input/>', {
-                        type: 'hidden',
-                        name: 'public_token',
-                        value: public_token
-                    }).appendTo($form);
-                    $form[0].submit();
+                    tokens.push(public_token);
+                    $formSubmitButton.prop('disabled', false);
                 },
             });
 
             $form.on('submit', function(e) {
-                e.preventDefault();
-                handler.open();
+                if (tokens.length === 0) {
+                    e.preventDefault();
+                } // else noop
+                $('<input/>', {
+                    type: 'hidden',
+                    name: 'tokens',
+                    value: tokens.join(','),
+                }).appendTo($form);
             });
+
+            $addAccountsButton.on('click', function(e) {
+                handler.open();
+            })
         })(jQuery);
     </script>
 {% endblock %}

@@ -4,11 +4,49 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+class Property(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='properties')
+    address = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.address
+
+
+class Application(models.Model):
+    property = models.ForeignKey(
+        Property,
+        on_delete=models.CASCADE,
+        related_name='applications')
+    unit = models.CharField(max_length=128, null=True, blank=True)
+    rent_asked = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    applicant_name = models.CharField(max_length=255)
+    applicant_email = models.EmailField()
+
+    class State(models.TextChoices):
+        waiting_for_applicant = 'waiting_for_applicant', _('waiting for applicant')
+        running = 'running', _('running')
+        payment_pending = 'payment_pending', _('payment pending')
+        completed = 'completed', _('completed')
+
+    state = models.CharField(
+        max_length=21,
+        choices=State.choices,
+        default=State.waiting_for_applicant)
+
+
 class Item(models.Model):
     id = models.CharField(max_length=128, primary_key=True)
     access_token = models.CharField(max_length=128)
     institution_id = models.CharField(max_length=10)
     last_pull = models.DateField(auto_now_add=True)
+    application = models.ForeignKey(
+        Application,
+        on_delete=models.SET_NULL,
+        related_name='items',
+        null=True)
 
 
 class Account(models.Model):
@@ -52,41 +90,3 @@ class Transaction(models.Model):
         'self',
         on_delete=models.SET_NULL,
         null=True)
-
-
-class Property(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='properties')
-    address = models.CharField(max_length=128)
-
-    def __str__(self):
-        return self.address
-
-
-class Application(models.Model):
-    property = models.ForeignKey(
-        Property,
-        on_delete=models.CASCADE,
-        related_name='applications')
-    unit = models.CharField(max_length=128, null=True, blank=True)
-    rent_asked = models.DecimalField(max_digits=10, decimal_places=2)
-    applicant_name = models.CharField(max_length=255)
-    applicant_email = models.EmailField()
-    item = models.OneToOneField(
-        Item,
-        on_delete=models.CASCADE,
-        related_name='application',
-        null=True)
-
-    class State(models.TextChoices):
-        waiting_for_applicant = 'waiting_for_applicant', _('waiting for applicant')
-        running = 'running', _('running')
-        payment_pending = 'payment_pending', _('payment pending')
-        completed = 'completed', _('completed')
-
-    state = models.CharField(
-        max_length=21,
-        choices=State.choices,
-        default=State.waiting_for_applicant)
