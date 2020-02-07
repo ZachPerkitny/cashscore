@@ -5,7 +5,8 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_decode
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, TemplateView, DetailView
+from django.shortcuts import render
 
 from .forms import ApplicationForm, ApplicantForm, PropertyForm
 from .models import Application, Item, Property, Transaction
@@ -112,15 +113,19 @@ class AddPropertyView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class ReportView(LoginRequiredMixin, TemplateView):
+class ReportDetailView(DetailView, LoginRequiredMixin):
+    model = Application
     template_name = 'score/reports.html'
+    context_object_name = 'transactions'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['transactions'] = Transaction.objects.filter(
-            account__item__application=context['application_id'],
-            account__item__application__property__user=self.request.user
-        ).order_by('-date')
-        # import ipdb;ipdb.set_trace()
-        return context
+    def get_object(self, queryset=None):
+        obj = super(ReportDetailView, self).get_object(queryset=queryset)
+        obj = Transaction.objects.filter(account__item__application=obj.id)
+        return obj
+
+    def get_queryset(self):
+        queryset = super(ReportDetailView, self).get_queryset()
+        return queryset.filter(property__user=self.request.user)
+
+  
     
