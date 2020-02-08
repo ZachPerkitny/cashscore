@@ -20,7 +20,7 @@ button {
   border-radius: $border-radius;
   cursor: pointer;
   box-sizing: border-box;
-  &:disabled {
+  &.disabled, &:disabled {
     opacity: .65;
     pointer-events: none;
   }
@@ -47,7 +47,7 @@ input {
     border-radius: $border-radius;
     cursor: pointer;
     box-sizing: border-box;
-    &:disabled {
+    &.disabled, &:disabled {
       opacity: .65;
       pointer-events: none;
     }

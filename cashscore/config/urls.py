@@ -23,4 +23,5 @@ urlpatterns = [
     path('', include('cashscore.score.urls', namespace='score')),
     path('', include('cashscore.web.urls', namespace='web')),
     path('admin/', admin.site.urls),
+    path('stripe/', include("djstripe.urls", namespace="djstripe")),
 ]

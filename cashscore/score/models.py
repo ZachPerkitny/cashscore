@@ -25,16 +25,16 @@ class Application(models.Model):
     applicant_name = models.CharField(max_length=255)
     applicant_email = models.EmailField()
 
-    class State(models.TextChoices):
-        waiting_for_applicant = 'waiting_for_applicant', _('waiting for applicant')
-        running = 'running', _('running')
-        payment_pending = 'payment_pending', _('payment pending')
-        completed = 'completed', _('completed')
+    sent_email_to_applicant = models.BooleanField(default=False)
+    applicant_connected_to_plaid = models.BooleanField(default=False)
+    pulled_plaid_data = models.BooleanField(default=False)
+    charged_client = models.BooleanField(default=False)
 
-    state = models.CharField(
-        max_length=21,
-        choices=State.choices,
-        default=State.waiting_for_applicant)
+    def is_completed(self):
+        return self.sent_email_to_applicant and\
+            self.applicant_connected_to_plaid and\
+            self.pulled_plaid_data and\
+            self.charged_client
 
 
 class Item(models.Model):

@@ -163,6 +163,7 @@ COMPRESS_PRECOMPILERS = (
 
 # Celery
 CELERY_BROKER_URL = env('REDIS_URL')
+CELERY_IGNORE_RESULT = True
 CELERY_BROKER_TRANSPORT_OPTIONS = {"max_retries": 3, "interval_start": 0, "interval_step": 0.2, "interval_max": 0.5}
 
 # Plaid

@@ -15,7 +15,7 @@
                     <th>Name</th>
                     <th>Property</th>
                     <th>Email</th>
-                    <th>Status</th>
+                    <th>Completed</th>
                     <th>View Report</th>
                 </tr>
             </thead>
@@ -26,8 +26,8 @@
                             <td>{{ application.applicant_name }}</td>
                             <td>{{ property.address }}</td>
                             <td>{{ application.applicant_email }}</td>
-                            <td>{{ application.state }}</td>
-                            <th><a class="button mb-0" href="#" disabled>View Report</a>
+                            <td>{{ application.is_completed|yesno:"True,False" }}</td>
+                            <th><a class="button mb-0{% if not application.is_completed %} disabled{% endif %}" href="#">View Report</a>
                         </tr>
                     {% endfor %}
                 {% endfor %}
