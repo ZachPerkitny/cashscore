@@ -13,7 +13,7 @@ from celery import chain
 
 from .forms import ApplicationForm, ApplicantForm, PropertyForm
 from .models import Application, Item, Property
-from .tasks import send_email_to_applicant, get_applicant_transactions, charge_customer_for_application
+from .tasks import send_email_to_applicant, get_applicant_transactions, charge_client_for_application, send_email_to_client
 from .tokens import application_token
 
 
@@ -90,8 +90,19 @@ class ApplicantView(FormView):
         self.application.save()
 
         chain(
-            get_applicant_transactions.si(self.application.id, form.cleaned_data.get('tokens'),),
-            charge_customer_for_application.si(self.application.id, uuid.uuid4()),
+            # Get Applicant Transactions
+            get_applicant_transactions.si(
+                self.application.id,
+                form.cleaned_data.get('tokens'),),
+            # Charge only once all transactions have been pulled
+            charge_client_for_application.si(
+                self.application.id,
+                uuid.uuid4()),
+            # Notify client only once the charge has been made
+            send_email_to_client.si(
+                self.application.id,
+                'https' if self.request.is_secure() else 'http',
+                get_current_site(self.request).domain),
         )()
 
         return super().form_valid(form)

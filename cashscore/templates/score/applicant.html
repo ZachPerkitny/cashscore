@@ -1,20 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container full-height-wheader flex flex-col align-items-center justify-content-center">
-        <h2>
+    <div class="container pt-3">
+        <h2 class="text-align-center">
             Welcome {{ application.applicant_name }}
         </h2>
         <form id="link-form" method="post" novalidate>
             {% csrf_token %}
-            <button class="button button-primary" type="submit" disabled>
-                Finish Application
-            </button>
-            <span class="mx-2">or</span>
-            <button class="button button-primary" id="add-accounts-button" type="button">
-                Add Account
-            </button>
-        </form> 
+            <div class="text-align-center">
+                <button class="button button-primary" type="submit" disabled>
+                    Finish Application
+                </button>
+                <span class="mx-2">or</span>
+                <button class="button button-primary" id="add-accounts-button" type="button">
+                    Link Accounts
+                </button>
+            </div>
+        </form>
+        <hr/>
+        <h4>
+            Linked Accounts
+        </h4>
+        <div class="list mb-1 full-width" id="accounts-list">
+            You have not linked any accounts yet.
+        </div>
     </div>
 {% endblock %}
 
@@ -26,21 +35,36 @@
             var $form = $('#link-form');
             var $formSubmitButton = $form.find('button[type="submit"]');
             var $addAccountsButton = $('#add-accounts-button');
+            var $accountsList = $('#accounts-list');
             var handler = Plaid.create({
                 clientName: 'CashScore',
                 env: '{{ PLAID_ENV }}',
                 key: '{{ PLAID_PUBLIC_KEY }}',
                 product: ['transactions'],
                 onSuccess: function(public_token, metadata) {
+                    if (tokens.length === 0) {
+                        $accountsList.empty();
+                        $formSubmitButton.prop('disabled', false);
+                    }
                     tokens.push(public_token);
-                    $formSubmitButton.prop('disabled', false);
+                    console.log(metadata)
+                    for (var account of metadata.accounts) {
+                        $accountsList.append($('<div/>', {
+                            class: 'list-item',
+                            text: metadata.institution.name + ' - ' + account.name,
+                        }).append($('<small/>', {
+                            class: 'ml-1',
+                            text: account.mask
+                        })));
+                    }
                 },
             });
 
             $form.on('submit', function(e) {
                 if (tokens.length === 0) {
                     e.preventDefault();
-                } // else noop
+                    return;
+                }
                 $('<input/>', {
                     type: 'hidden',
                     name: 'tokens',

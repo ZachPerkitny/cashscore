@@ -29,6 +29,7 @@ class Application(models.Model):
     applicant_connected_to_plaid = models.BooleanField(default=False)
     pulled_plaid_data = models.BooleanField(default=False)
     charged_client = models.BooleanField(default=False)
+    sent_email_to_client = models.BooleanField(default=False)
 
     def is_completed(self):
         return self.sent_email_to_applicant and\

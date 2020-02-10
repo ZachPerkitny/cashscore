@@ -19,7 +19,7 @@ from cashscore.plaid import client as plaid_client
 from .models import Account, Application, Item, Transaction
 
 
-@shared_task(autoretry_for=(SMTPException,), retry_backoff=True, max_retries=None, acks_late=True)
+@shared_task(autoretry_for=(DatabaseError, SMTPException,), retry_backoff=True, max_retries=None, acks_late=True)
 @transaction.atomic
 def send_email_to_applicant(application_id, protocol, domain, token):
     application = Application.objects.select_for_update().get(id=application_id)
@@ -37,6 +37,8 @@ def send_email_to_applicant(application_id, protocol, domain, token):
             mail_subject,
             message,
             to=[to_email])
+        # TODO(zvp): This is not idempotent, if there is a DatabaseError,
+        # the email may get sent more than once.
         email.send()
 
         application.sent_email_to_applicant = True
@@ -123,7 +125,7 @@ def get_applicant_transactions(application_id, tokens):
 
 @shared_task(autoretry_for=(DatabaseError, StripeError,), retry_backoff=True, max_retries=None, acks_late=True)
 @transaction.atomic
-def charge_customer_for_application(application_id, idempotency_key):
+def charge_client_for_application(application_id, idempotency_key):
     application = Application.objects.select_for_update().get(id=application_id)
     if not application.charged_client:
         customer = application.property.user.stripe_customer
@@ -132,4 +134,30 @@ def charge_customer_for_application(application_id, idempotency_key):
             idempotency_key=idempotency_key)
 
         application.charged_client = True
+        application.save()
+
+
+@shared_task(autoretry_for=(DatabaseError, SMTPException,), retry_backoff=True, max_retries=None, acks_late=True)
+@transaction.atomic
+def send_email_to_client(application_id, protocol, domain):
+    application = Application.objects.select_for_update().get(id=application_id)
+    if not application.sent_email_to_client:
+        client = application.property.user
+        mail_subject = 'Lorem Ipsum Dolor'
+        message = render_to_string('score/client-report-available-email.html', {
+            'application': application,
+            'client': client,
+            'protocol': protocol,
+            'domain': domain
+        })
+        to_email = client.email
+        email = EmailMessage(
+            mail_subject,
+            message,
+            to=[to_email])
+        # TODO(zvp): This is not idempotent, if there is a DatabaseError,
+        # the email may get sent more than once.
+        email.send()
+
+        application.sent_email_to_client = True
         application.save()

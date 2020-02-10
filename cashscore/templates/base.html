@@ -17,7 +17,9 @@
             {% block content %}{% endblock %}
         {% endblock %}
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
         <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
+        {% include 'includes/messages.html' %}
         {% block javascript %}{% endblock %}
     </body>
 </html>

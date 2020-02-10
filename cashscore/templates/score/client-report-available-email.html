@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <p>
+        Hi {{ client.get_full_name }},
+        Click the button below to view the report for {{ application.applicant_name }}
+    </p>
+    <a class="button button-primary" href="#">
+        View Report
+    </a>
+{% endblock %}
