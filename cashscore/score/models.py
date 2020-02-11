@@ -3,6 +3,8 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from django_cryptography.fields import encrypt
+
 
 class Property(models.Model):
     user = models.ForeignKey(
@@ -40,7 +42,7 @@ class Application(models.Model):
 
 class Item(models.Model):
     id = models.CharField(max_length=128, primary_key=True)
-    access_token = models.CharField(max_length=128)
+    access_token = encrypt(models.CharField(max_length=128))
     institution_id = models.CharField(max_length=10)
     last_pull = models.DateField(auto_now_add=True)
     application = models.ForeignKey(
