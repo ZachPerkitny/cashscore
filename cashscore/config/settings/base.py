@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
 
     'cashscore.accounts',
+    'cashscore.tasks',
     'cashscore.score',
     'cashscore.web',
 ]
@@ -104,6 +105,7 @@ WSGI_APPLICATION = 'cashscore.config.wsgi.application'
 DATABASES = {
     'default': env.db()
 }
+DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -163,7 +165,7 @@ COMPRESS_PRECOMPILERS = (
 
 # Celery
 CELERY_BROKER_URL = env('REDIS_URL')
-CELERY_IGNORE_RESULT = True
+CELERY_RESULT_BACKEND = 'cashscore.tasks.backends:DatabaseBackend'
 CELERY_BROKER_TRANSPORT_OPTIONS = {"max_retries": 3, "interval_start": 0, "interval_step": 0.2, "interval_max": 0.5}
 
 # Plaid

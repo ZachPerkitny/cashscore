@@ -37,12 +37,11 @@ class AddApplicantView(LoginRequiredMixin, FormView):
         protocol = 'https' if self.request.is_secure() else 'http'
         domain = get_current_site(self.request).domain
         token = application_token.make_token(application)
-        transaction.on_commit(
-            lambda: send_email_to_applicant.delay(
-                application.id,
-                protocol,
-                domain,
-                token))
+        send_email_to_applicant.delay(
+            application.id,
+            protocol,
+            domain,
+            token)
 
         return super().form_valid(form)
 
