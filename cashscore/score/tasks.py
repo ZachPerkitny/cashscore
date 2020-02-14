@@ -14,6 +14,7 @@ from plaid.errors import APIError, RateLimitExceededError
 from smtplib import SMTPException
 from stripe.error import StripeError
 
+from cashscore.accounts.stripe import charge_customer
 from cashscore.plaid import client as plaid_client
 
 from .models import Account, Application, Item, Transaction
@@ -129,7 +130,10 @@ def charge_client_for_application(application_id, idempotency_key):
     application = Application.objects.select_for_update().get(id=application_id)
     if not application.charged_client:
         customer = application.property.user.stripe_customer
-        customer.charge(
+        # HACK: use custom charge customer function so in test mode
+        # we don't get the 'No such file upload: file_***' exception.
+        charge_customer(
+            customer,
             amount=decimal.Decimal('19.99'),
             idempotency_key=idempotency_key)
 
@@ -143,7 +147,7 @@ def send_email_to_client(application_id, protocol, domain):
     application = Application.objects.select_for_update().get(id=application_id)
     if not application.sent_email_to_client:
         client = application.property.user
-        mail_subject = 'Lorem Ipsum Dolor'
+        mail_subject = 'New Report Available'
         message = render_to_string('score/client-report-available-email.html', {
             'application': application,
             'client': client,

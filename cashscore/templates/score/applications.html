@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load fontawesome_5 %}
 
 {% block content %}
     <div class="container pt-3">
@@ -26,7 +27,13 @@
                             <td>{{ application.applicant_name }}</td>
                             <td>{{ property.address }}</td>
                             <td>{{ application.applicant_email }}</td>
-                            <td>{{ application.is_completed|yesno:"True,False" }}</td>
+                            <td class="text-align-center">
+                                {% if application.is_completed %}
+                                {% fa5_icon 'check-circle' 'fas' class='fa-lg primary' %}
+                                {% else %}
+                                {% fa5_icon 'times-circle' 'fas' class='fa-lg danger' %}
+                                {% endif %}
+                            </td>
                             <th><a class="button mb-0{% if not application.is_completed %} disabled{% endif %}" href="#">View Report</a>
                         </tr>
                     {% endfor %}

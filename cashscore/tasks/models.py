@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.utils import timezone
 
 from celery import states
 
@@ -19,6 +20,10 @@ class TaskMetaManager(models.Manager):
             'meta': meta,
             'traceback': traceback,
         }
+
+        if status == states.SUCCESS:
+            fields['completed'] = timezone.now()
+
         obj, created = self.using(using).get_or_create(
             id=task_id, defaults=fields)
 
@@ -43,13 +48,11 @@ class TaskMeta(models.Model):
     kwargs = JSONField(null=True)
     worker = models.CharField(max_length=100, null=True)
 
-    created = models.DateTimeField(auto_now_add=True)
+    started = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     completed = models.DateTimeField(null=True)
 
     traceback = models.TextField(null=True)
     meta = JSONField(null=True, editable=False)
-
-    locked_at = models.DateTimeField(null=True)
 
     objects = TaskMetaManager()

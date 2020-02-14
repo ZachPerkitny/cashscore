@@ -21,5 +21,5 @@ class Task(celery.Task):
         task_id = uuid()
         self.update_state(task_id, celery.states.PENDING)
         return transaction.on_commit(
-            lambda: super(Task, self).apply_async(args=args, kwargs=kwargs, task_id=task_id)
+            lambda: super(Task, self).apply_async(args, kwargs, task_id)
         )
