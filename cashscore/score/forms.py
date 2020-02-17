@@ -7,12 +7,12 @@ from .models import Application, Property
 class ApplicationForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['property'].queryset = Property.objects.filter(user=user)
+        self.fields['user_property'].queryset = Property.objects.filter(user=user)
         self.fields['applicant_name'].widget.attrs.update({ 'autofocus': True })
 
     class Meta:
         model = Application
-        fields = ( 'applicant_name', 'applicant_email', 'property', 'unit', 'rent_asked',)
+        fields = ( 'applicant_name', 'applicant_email', 'user_property', 'unit', 'rent_asked',)
 
 
 class CommaSeperatedField(forms.Field):

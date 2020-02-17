@@ -20,7 +20,7 @@ from cashscore.plaid import client as plaid_client
 from .models import Account, Application, Item, Transaction
 
 
-@shared_task(autoretry_for=(DatabaseError, SMTPException,), retry_backoff=True, max_retries=None, acks_late=True)
+@shared_task(autoretry_for=(DatabaseError, SMTPException,), retry_backoff=True, max_retries=10, acks_late=True)
 @transaction.atomic
 def send_email_to_applicant(application_id, protocol, domain, token):
     application = Application.objects.select_for_update().get(id=application_id)
@@ -46,7 +46,7 @@ def send_email_to_applicant(application_id, protocol, domain, token):
         application.save()
 
 
-@shared_task(autoretry_for=(DatabaseError, APIError, RateLimitExceededError,), retry_backoff=True, max_retries=None, acks_late=True)
+@shared_task(autoretry_for=(DatabaseError, APIError, RateLimitExceededError,), retry_backoff=True, max_retries=10, acks_late=True)
 @transaction.atomic
 def get_applicant_transactions(application_id, tokens):
     application = Application.objects.select_for_update().get(id=application_id)
@@ -124,7 +124,7 @@ def get_applicant_transactions(application_id, tokens):
         application.save()
 
 
-@shared_task(autoretry_for=(DatabaseError, StripeError,), retry_backoff=True, max_retries=None, acks_late=True)
+@shared_task(autoretry_for=(DatabaseError, StripeError,), retry_backoff=True, max_retries=10, acks_late=True)
 @transaction.atomic
 def charge_client_for_application(application_id, idempotency_key):
     application = Application.objects.select_for_update().get(id=application_id)
@@ -141,7 +141,7 @@ def charge_client_for_application(application_id, idempotency_key):
         application.save()
 
 
-@shared_task(autoretry_for=(DatabaseError, SMTPException,), retry_backoff=True, max_retries=None, acks_late=True)
+@shared_task(autoretry_for=(DatabaseError, SMTPException,), retry_backoff=True, max_retries=10, acks_late=True)
 @transaction.atomic
 def send_email_to_client(application_id, protocol, domain):
     application = Application.objects.select_for_update().get(id=application_id)
