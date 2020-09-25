@@ -6,7 +6,7 @@ class TokenGenerator(PasswordResetTokenGenerator):
         return (
             str(application.id) +
             str(timestamp) +
-            str(application.state) # using state will invalidate it once the applicant completes their part
+            str(application.applicant_connected_to_plaid) # using applicant_connected_to_plaid will invalidate it once the applicant completes their part
         )
 
 

@@ -1,0 +1,41 @@
+{% if messages %}
+<script type="text/javascript">
+    $.notify.addStyle('custom', {
+        html: '<div><div data-notify-text/></div>',
+        classes: {
+            base: {
+                'border-radius': '4px',
+                'border-top': '1px solid #eee',
+                'border-bottom': '1px solid #eee',
+                'border-right': '1px solid #eee',
+                'border-left': '5px solid transparent',
+                'padding': '8px 15px 8px 14px',
+                'color': '#222',
+                'background-color': '#fff',
+                'min-width': '350px',
+            },
+            error: {
+                'border-left-color': '#F44336',
+            },
+            success: {
+                'border-left-color': '#4CAF50',
+            },
+            info: {
+                'border-left-color': '#4FC3F7',
+            },
+            warn: {
+                'border-left-color': '#FFEB3B',
+            },
+        },
+    });
+    {% for message in messages %}
+    $.notify('{{ message }}', {
+        className: '{{ message.tags }}',
+        globalPosition: 'top right',
+        hideAnimation: 'slideUp',
+        showAnimation: 'slideDown',
+        style: 'custom',
+    });
+    {% endfor %}
+</script>
+{% endif %}

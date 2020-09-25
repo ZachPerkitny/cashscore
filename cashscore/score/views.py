@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
@@ -7,9 +9,11 @@ from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_decode
 from django.views.generic import FormView, TemplateView
 
+from celery import chain
+
 from .forms import ApplicationForm, ApplicantForm, PropertyForm
 from .models import Application, Item, Property
-from .tasks import send_email_to_applicant, get_applicant_transactions
+from .tasks import send_email_to_applicant, get_applicant_transactions, charge_client_for_application, send_email_to_client
 from .tokens import application_token
 
 
@@ -28,17 +32,16 @@ class AddApplicantView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('score:applications')
 
     def form_valid(self, form):
-        with transaction.atomic():
-            application = form.save()
+        application = form.save()
 
-            protocol = 'https' if self.request.is_secure() else 'http'
-            domain = get_current_site(self.request).domain
-            token = application_token.make_token(application)
-            send_email_to_applicant.delay(
-                application.id,
-                protocol,
-                domain,
-                token)
+        protocol = 'https' if self.request.is_secure() else 'http'
+        domain = get_current_site(self.request).domain
+        token = application_token.make_token(application)
+        send_email_to_applicant.delay(
+            application.id,
+            protocol,
+            domain,
+            token)
 
         return super().form_valid(form)
 
@@ -82,12 +85,24 @@ class ApplicantView(FormView):
         return HttpResponseRedirect(reverse_lazy('web:home'))
 
     def form_valid(self, form):
-        with transaction.atomic():
-            self.application.state = Application.State.running
-            self.application.save()
+        self.application.applicant_connected_to_plaid = True
+        self.application.save()
 
-            public_token = form.cleaned_data.get('public_token')
-            get_applicant_transactions.delay(self.application.id, public_token)
+        chain(
+            # Get Applicant Transactions
+            get_applicant_transactions.si(
+                self.application.id,
+                form.cleaned_data.get('tokens'),),
+            # Charge only once all transactions have been pulled
+            charge_client_for_application.si(
+                self.application.id,
+                uuid.uuid4()),
+            # Notify client only once the charge has been made
+            send_email_to_client.si(
+                self.application.id,
+                'https' if self.request.is_secure() else 'http',
+                get_current_site(self.request).domain),
+        )()
 
         return super().form_valid(form)
 
